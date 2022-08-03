@@ -7,7 +7,6 @@
  * 
  * 
 */
-
 class PVector {
 	x = 0;
 	y = 0;
@@ -15,6 +14,8 @@ class PVector {
 		this.x = x;
 		this.y = y;
 	};
+
+	// Methods (These change the PVector itself)
 	sub (pv) {
 		if (typeof(pv.x) === 'number' && typeof(pv.y) === 'number') {
 			this.x -= pv.x;
@@ -50,8 +51,27 @@ class PVector {
 		this.x /= this.mag();
 		this.y /= this.mag();
 	};
+
+	// Getter Methods
 	get mag () {
 		return Math.sqrt((this.x*this.x) + (this.y*this.y));
+	};
+
+	// Static Methods
+	static sub (pva, pvb) {
+		return new PVector(pva.x - pvb.x, pva.y - pvb.y);
+	};
+	static add (pva, pvb) {
+		return new PVector(pva.x + pvb.x, pva.y + pvb.y);
+	};
+	static mult (pva, pvb) {
+		return new PVector(pva.x * pvb.x, pva.y * pvb.y);
+	};
+	static div (pva, pvb) {
+		return new PVector(pva.x / pvb.x, pva.y / pvb.y);
+	};
+	static mod (pva, pvb) {
+		return new PVector(pva.x % pvb.x, pva.y % pvb.y);
 	};
 }
 
