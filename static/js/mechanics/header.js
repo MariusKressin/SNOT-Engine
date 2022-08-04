@@ -78,7 +78,6 @@ class PVector {
 let __env__ = {
 	fps: 30,
 };
-
 let fillColor = {
 	r: 255,
 	g: 255,

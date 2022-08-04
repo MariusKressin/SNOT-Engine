@@ -1,2 +1,2 @@
 # SNOT Engine
- A simple drawing engine that utilizes a JavaScipt and SVG engine called SNOT.
+This is an engine that attempts to emulate ProcessingJS, using HTML, SVG, and JavaScript.
