@@ -77,6 +77,18 @@ class PVector {
 
 let __env__ = {
 	fps: 30,
+	matrix: {
+		x: 0,
+		y: 0,
+		s: 0,
+		r: 0,
+	},
+	matrix_o: {
+		x: 0,
+		y: 0,
+		s: 0,
+		r: 0,
+	},
 };
 let fillColor = {
 	r: 255,
@@ -103,6 +115,22 @@ var mouseReleased = function () {};
 var keyTyped = function (k) {};
 var keyPressed = function (k) {};
 var keyReleased = function (k) {};
+function pushMatrix () {
+	__env__.matrix_o = __env__.matrix;
+}
+function popMatrix () {
+	__env__.matrix = __env__.matrix_o;
+}
+function translate (x, y) {
+	__env__.matrix.x += x;
+	__env__.matrix.y += y;
+}
+function rotate (theta) {
+	__env__.matrix.r += theta;
+}
+function scale (num) {
+	__env__.matrix.s *= num;
+}
 function fill (r, g, b, a = 255) {
 	if (b === undefined && g !== undefined) {
 		fillColor = {
