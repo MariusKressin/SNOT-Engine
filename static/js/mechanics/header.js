@@ -77,6 +77,27 @@ class PVector {
 
 let __env__ = {
 	fps: 30,
+	_angleMode: "deg",
+	matrix: {
+		x: 0,
+		y: 0,
+		s: 0,
+		r: 0,
+	},
+	matrix_o: {
+		x: 0,
+		y: 0,
+		s: 0,
+		r: 0,
+	},
+	get angleMode () {
+		return this._angleMode;
+	},
+	set angleMode (newMode) {
+		if (newMode.toLowerCase() === 'deg' || newMode.toLowerCase() === 'rad') {
+			this._angleMode = newMode;
+		}
+	},
 };
 let fillColor = {
 	r: 255,
@@ -103,6 +124,25 @@ var mouseReleased = function () {};
 var keyTyped = function (k) {};
 var keyPressed = function (k) {};
 var keyReleased = function (k) {};
+function pushMatrix () {
+	__env__.matrix_o = __env__.matrix;
+}
+function popMatrix () {
+	__env__.matrix = __env__.matrix_o;
+}
+function translate (x, y) {
+	__env__.matrix.x += x;
+	__env__.matrix.y += y;
+}
+function rotate (theta) {
+	__env__.matrix.r += theta;
+}
+function scale (num) {
+	__env__.matrix.s *= num;
+}
+function angleMode (n) {
+	__env__._angleMode = n;
+}
 function fill (r, g, b, a = 255) {
 	if (b === undefined && g !== undefined) {
 		fillColor = {
@@ -148,13 +188,19 @@ function noFill () {
 	};
 }
 function ellipse (x, y, w, h) {
-	bi("game").innerHTML += `<ellipse cx = "${x}px" cy = "${y}px" rx = "${w/2}px" ry = "${h/2}px" fill = "rgba(${fillColor.r}, ${fillColor.g}, ${fillColor.b}, ${fillColor.a/255})" stroke = "rgba(${strokeProp.r}, ${strokeProp.g}, ${strokeProp.b}, ${strokeProp.a/255})" strokeWidth = "${strokeProp.w}"/>`;
+	bi("game").innerHTML += `<ellipse cx="${x}px" cy="${y}px" rx="${w/2}px" ry="${h/2}px" fill="rgba(${fillColor.r}, ${fillColor.g}, ${fillColor.b}, ${fillColor.a/255})" stroke="rgba(${strokeProp.r}, ${strokeProp.g}, ${strokeProp.b}, ${strokeProp.a/255})" strokeWidth="${strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 function rect (x, y, w, h) {
-	bi("game").innerHTML += `<rect x = "${x}px" y = "${y}px" width = "${w}px" height = "${h}px" fill = "rgba(${fillColor.r}, ${fillColor.g}, ${fillColor.b}, ${fillColor.a/255})" stroke = "rgba(${strokeProp.r}, ${strokeProp.g}, ${strokeProp.b}, ${strokeProp.a/255})" strokeWidth = "${strokeProp.w}"/>`;
+	bi("game").innerHTML += `<rect x="${x}px" y="${y}px" width="${w}px" height="${h}px" fill="rgba(${fillColor.r}, ${fillColor.g}, ${fillColor.b}, ${fillColor.a/255})" stroke="rgba(${strokeProp.r}, ${strokeProp.g}, ${strokeProp.b}, ${strokeProp.a/255})" strokeWidth="${strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+}
+function line(x1, y1, x2, y2) {
+	bi("game").innerHTML += `<line x1="${x1}px" y1="${y1}px" x2="${x2}px" y2="${y2}px" stroke="rgba(${strokeProp.r}, ${strokeProp.g}, ${strokeProp.b}, ${strokeProp.a / 255})" strokeWidth="${strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 function circle (x, y, s) {
 	ellipse(x, y, s, s);
+}
+function point (x, y) {
+	bi("game").innerHTML += `<circle cx="${x}px" cy="${y}px" rx="${0}px" ry="${0}px" fill="rgba(${fillColor.r}, ${fillColor.g}, ${fillColor.b}, ${fillColor.a / 255})" stroke="rgba(${strokeProp.r}, ${strokeProp.g}, ${strokeProp.b}, ${strokeProp.a / 255})" strokeWidth="${strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 function background (r, g, b, a = 255) {
 	let R, G, B, A;
