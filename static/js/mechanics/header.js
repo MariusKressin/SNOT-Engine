@@ -99,6 +99,8 @@ let __env__ = {
 		}
 	},
 };
+let width = 600;
+let height = 500;
 let fillColor = {
 	r: 255,
 	g: 255,
@@ -230,5 +232,11 @@ function constrain (val, low, high) {
 	} else {
 		return val;
 	}
+}
+function size (w, h) {
+	width = w;
+	height = h;
+	bi("game").width = `${w}px`;
+	bi("game").height = `${h}px`;
 }
 var draw = () => {};
