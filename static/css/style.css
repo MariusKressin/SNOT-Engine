@@ -20,8 +20,6 @@ div.svg-container {
 svg {
 	margin: auto;
 	background: black;
-	width: 600px;
-	height: 500px;
 }
 @media (max-width: 599px) {
 	div.svg-container {
