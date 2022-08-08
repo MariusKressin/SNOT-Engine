@@ -75,10 +75,12 @@ class PVector {
 	};
 }
 
-let __env__ = {
+const __env__ = {
 	fps: 30,
 	_angleMode: "deg",
 	rectMode: "center",
+	mouseX: 0,
+	mouseY: 0,
 	matrix: {
 		x: 0,
 		y: 0,
@@ -126,7 +128,9 @@ let __env__ = {
 		}
 	},
 };
-let UP = 38, DOWN = 40, LEFT = 37, RIGHT = 39, DEGREES = 'deg', RADIANS = 'rad', CLOSE = 'close';
+let UP = 38, DOWN = 40, LEFT = 37, RIGHT = 39, DEGREES = 'deg', RADIANS = 'rad', CLOSE = 'close', NONE = 'none',
+POINTER = 'pointer', ARROW = 'default', TEXT = 'text', VERTICALTEXT = 'vertical-text';
+let mouseX = 0, mouseY = 0, pmouseX = 0, pmouseY = 0, mouseIsPressed = false, keyIsPressed = false;
 let width = 600;
 let height = 500;
 function $ (el) {
@@ -135,9 +139,10 @@ function $ (el) {
 function bi (el) {
 	return document.getElementById(el);
 }
-var mouseClicked = function () {};
-var mousePressed = function () {};
-var mouseReleased = function () {};
+var mouseClicked = function (e) {};
+var mousePressed = function (e) {};
+var mouseReleased = function (e) {};
+var mouseMoved = function (e) {};
 var keyTyped = function (k) {};
 var keyPressed = function (k) {};
 var keyReleased = function (k) {};
@@ -155,12 +160,16 @@ function translate (x, y) {
 	__env__.matrix.y += y;
 }
 
-function rotate (theta) {
-	__env__.matrix.r += theta;
+function rotate (angle) {
+	__env__.matrix.r += angle;
 }
 
-function scale (num) {
-	__env__.matrix.s *= num;
+function scale (amt) {
+	__env__.matrix.s *= amt;
+}
+
+function frameRate (fps) {
+	__env__.fps = fps;
 }
 
 function angleMode (n) {
@@ -169,6 +178,10 @@ function angleMode (n) {
 
 function curveTightness (n) {
 	__env__.curveTightness = -1 * (n - 100)/100;
+}
+
+function cursor (type) {
+	bi("canvas").style.cursor = type;
 }
 
 function fill (r, g, b, a = 255) {
@@ -187,7 +200,7 @@ function fill (r, g, b, a = 255) {
 	}
 }
 
-function stroke(r, g, b, a = 255) {
+function stroke (r, g, b, a = 255) {
 	if (b === undefined && g !== undefined) {
 		__env__.strokeProp = {
 			r, g: r, b: r, a: g, w: __env__.strokeProp.w
@@ -201,6 +214,10 @@ function stroke(r, g, b, a = 255) {
 			r, g, b, a, w: __env__.strokeProp.w
 		};
 	}
+}
+
+function strokeWeight (thickness) {
+	__env__.strokeProp.w = thickness;
 }
 
 function noStroke () {
@@ -220,23 +237,23 @@ function noFill () {
 }
 
 function ellipse (x, y, w, h) {
-	bi("game").innerHTML += `<ellipse cx="${x}px" cy="${y}px" rx="${w/2}px" ry="${h/2}px" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a/255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a/255})" strokeWidth="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+	bi("canvas").innerHTML += `<ellipse cx="${x}px" cy="${y}px" rx="${w/2}px" ry="${h/2}px" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a/255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a/255})" stroke-width="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 
 function rect (x, y, w, h) {
-	bi("game").innerHTML += `<rect x="${__env__.rectMode === "corner" ? (x - (w / 2)) : x}px" y="${__env__.rectMode === "corner" ? (y - (h / 2)) : y}px" width="${w}px" height="${h}px" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a/255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a/255})" strokeWidth="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+	bi("canvas").innerHTML += `<rect x="${__env__.rectMode === "corner" ? (x - (w / 2)) : x}px" y="${__env__.rectMode === "corner" ? (y - (h / 2)) : y}px" width="${w}px" height="${h}px" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a/255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a/255})" stroke-width="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 
 function line (x1, y1, x2, y2) {
-	bi("game").innerHTML += `<line x1="${x1}px" y1="${y1}px" x2="${x2}px" y2="${y2}px" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" strokeWidth="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+	bi("canvas").innerHTML += `<line x1="${x1}px" y1="${y1}px" x2="${x2}px" y2="${y2}px" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" stroke-width="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 
 function cubic (x1, y1, cx1, cy1, cx2, cy2, x2, y2) {
-	bi("game").innerHTML += `<path d="M ${x1} ${y1} C ${cx1} ${cy1} ${cx2} ${cy2} ${x2} ${y2}" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" strokeWidth="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+	bi("canvas").innerHTML += `<path d="M ${x1} ${y1} C ${cx1} ${cy1} ${cx2} ${cy2} ${x2} ${y2}" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" stroke-width="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 
 function quadratic (x1, y1, cx, cy, x2, y2) {
-	bi("game").innerHTML += `<path d="M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" strokeWidth="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+	bi("canvas").innerHTML += `<path d="M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" stroke-width="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 
 function circle (x, y, s) {
@@ -244,7 +261,7 @@ function circle (x, y, s) {
 }
 
 function point (x, y) {
-	bi("game").innerHTML += `<circle cx="${x}px" cy="${y}px" rx="${0}px" ry="${0}px" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a / 255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" strokeWidth="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+	bi("canvas").innerHTML += `<circle cx="${x}px" cy="${y}px" rx="${0}px" ry="${0}px" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a / 255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" stroke-width="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 
 function beginShape () {
@@ -304,7 +321,7 @@ function endShape (way = 'none') {
 	if (way === CLOSE) {
 		vertex(__env__.shape.pathStart.x, __env__.shape.pathStart.y);
 	}
-	bi("game").innerHTML += `<path d="${__env__.shape.path}" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a / 255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" strokeWidth="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
+	bi("canvas").innerHTML += `<path d="${__env__.shape.path}" fill="rgba(${__env__.fillColor.r}, ${__env__.fillColor.g}, ${__env__.fillColor.b}, ${__env__.fillColor.a / 255})" stroke="rgba(${__env__.strokeProp.r}, ${__env__.strokeProp.g}, ${__env__.strokeProp.b}, ${__env__.strokeProp.a / 255})" stroke-width="${__env__.strokeProp.w}" style="transform: translate(${__env__.matrix.x}px, ${__env__.matrix.y}px), scale(${__env__.matrix.s}), rotate(${__env__.matrix.r}${__env__._angleMode});"/>`;
 }
 
 function background (r, g, b, a = 255) {
@@ -327,8 +344,8 @@ function background (r, g, b, a = 255) {
 	G = rgba.g;
 	B = rgba.b;
 	A = rgba.a;
-	bi("game").innerHTML = "";
-	bi("game").style.background = `rgba(${R}, ${G}, ${B}, ${A})`;
+	bi("canvas").innerHTML = "";
+	bi("canvas").style.background = `rgba(${R}, ${G}, ${B}, ${A})`;
 }
 
 function constrain (val, low, high) {
@@ -344,8 +361,8 @@ function constrain (val, low, high) {
 function size (w, h) {
 	width = w;
 	height = h;
-	bi("game").setAttribute('width', `${w}px`);
-	bi("game").setAttribute('height', `${h}px`);
+	bi("canvas").setAttribute('width', `${w}px`);
+	bi("canvas").setAttribute('height', `${h}px`);
 }
 
 var draw = () => {};
